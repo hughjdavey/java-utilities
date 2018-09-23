@@ -6,6 +6,7 @@ import types.Tuple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,6 +34,16 @@ public class Collections {
 
     public static <T> Collection<T> fill(final T t, final int times) {
         return IntStream.range(0, times).mapToObj(i -> t).collect(Collectors.toList());
+    }
+
+    /** VALIDATORS **/
+
+    public static <T> boolean isNullOrEmpty(final Collection<T> ts) {
+        return Objects.isNull(ts) || ts.isEmpty();
+    }
+
+    public static <T> boolean notNullOrEmpty(final Collection<T> ts) {
+        return !isNullOrEmpty(ts);
     }
 
     /** GETTERS **/
@@ -155,7 +166,7 @@ public class Collections {
     }
 
     public static <T> Collection<Collection<T>> partition(final Collection<T> ts, final int partitionSize) {
-        validatePartitionSize(partitionSize);
+        validatePartitionSize(partitionSize, 1);
 
         return IntStream.iterate(0, i -> i + partitionSize).limit((ts.size() / partitionSize) + 1)
                 .mapToObj(i -> slice(ts, i, i + partitionSize > ts.size() ? ts.size() : i + partitionSize))
@@ -164,12 +175,30 @@ public class Collections {
     }
 
     public static <T> Collection<Collection<T>> discardingPartition(final Collection<T> ts, final int partitionSize) {
-        validatePartitionSize(partitionSize);
+        validatePartitionSize(partitionSize, 1);
 
         return IntStream.iterate(0, i -> i + partitionSize).limit(ts.size() / partitionSize)
                 .mapToObj(i -> slice(ts, i, i + partitionSize))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Partition a collection similarly to {@code partition}, but guarantees no partition will have a size of 1
+     */
+    public static <T> Collection<Collection<T>> partitionNoSingletons(final Collection<T> ts, final int partitionSize) {
+        validatePartitionSize(partitionSize, 2);
+
+        if (ts.size() % partitionSize == 1) {
+            final List<T> mutableTs = new ArrayList<>(ts);
+            final Collection<T> last2Ts = newCollection(mutableTs.remove(mutableTs.size() - 2), mutableTs.remove(mutableTs.size() - 1));
+
+            final Collection<Collection<T>> partitioned = partition(mutableTs, partitionSize);
+            partitioned.add(last2Ts);
+            return partitioned;
+        }
+        return partition(ts, partitionSize);
+    }
+
 
     public static <T> Collection<T> reverse(final Collection<T> ts) {
         return reverseRange(0, ts.size())
@@ -190,9 +219,9 @@ public class Collections {
                 .collect(Collectors.toList());
     }
 
-    private static void validatePartitionSize(int partitionSize) {
-        if (partitionSize < 1) {
-            throw new IllegalArgumentException("Partition size must be > 1");
+    private static void validatePartitionSize(int partitionSize, final int minimumSize) {
+        if (partitionSize < minimumSize) {
+            throw new IllegalArgumentException("Partition size must be > " + minimumSize);
         }
     }
 }

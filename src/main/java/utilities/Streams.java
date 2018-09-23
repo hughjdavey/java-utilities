@@ -20,5 +20,4 @@ public class Streams {
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
-
 }

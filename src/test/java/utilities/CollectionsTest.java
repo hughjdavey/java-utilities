@@ -13,6 +13,7 @@ import java.util.OptionalInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.Is.is;
@@ -28,10 +29,13 @@ import static utilities.Collections.indexed;
 import static utilities.Collections.indexedFrom;
 import static utilities.Collections.indicesOf;
 import static utilities.Collections.init;
+import static utilities.Collections.isNullOrEmpty;
 import static utilities.Collections.last;
 import static utilities.Collections.mid;
 import static utilities.Collections.newCollection;
+import static utilities.Collections.notNullOrEmpty;
 import static utilities.Collections.partition;
+import static utilities.Collections.partitionNoSingletons;
 import static utilities.Collections.reverse;
 import static utilities.Collections.slice;
 import static utilities.Collections.tail;
@@ -52,6 +56,7 @@ public class CollectionsTest {
 
     final private Collection<Integer> oneToFive = asList(1, 2, 3, 4, 5);
     final private Collection<Integer> oneToSix = asList(1, 2, 3, 4, 5, 6);
+    final private Collection<Integer> oneToNine = asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
     final private Collection<String> words = asList("one", "two", "three");
 
     @Test
@@ -72,6 +77,18 @@ public class CollectionsTest {
         assertThat(fill("foo", 0), is(newCollection()));
         assertThat(fill("foo", 2), is(newCollection("foo", "foo")));
         assertThat(fill("foo", 5), is(newCollection("foo", "foo", "foo", "foo", "foo")));
+    }
+
+    @Test
+    public void testValidators() {
+        assertThat(notNullOrEmpty(oneToFive), is(true));
+        assertThat(isNullOrEmpty(oneToFive), is(false));
+
+        assertThat(notNullOrEmpty(null), is(false));
+        assertThat(isNullOrEmpty(null), is(true));
+
+        assertThat(notNullOrEmpty(newCollection()), is(false));
+        assertThat(isNullOrEmpty(newCollection()), is(true));
     }
 
     @Test
@@ -205,6 +222,21 @@ public class CollectionsTest {
         assertThat(discardingPartition(oneToSix, 4), contains(newCollection(1, 2, 3, 4)));
         assertThat(discardingPartition(oneToSix, 5), contains(newCollection(1, 2, 3, 4, 5)));
         assertThat(discardingPartition(oneToSix, 6), contains(oneToSix));
+    }
+
+    @Test
+    public void testPartitionNoSingleton() {
+        final Collection<Collection<Integer>> of3 = partitionNoSingletons(oneToNine, 3);
+        assertThat(of3, hasSize(3));
+        assertThat(of3, contains(newCollection(1, 2, 3), newCollection(4, 5, 6), newCollection(7, 8, 9)));
+
+        final Collection<Collection<Integer>> of4 = partitionNoSingletons(oneToNine, 4);
+        assertThat(of4, hasSize(3));
+        assertThat(of4, contains(newCollection(1, 2, 3, 4), newCollection(5, 6, 7), newCollection(8, 9)));
+
+        final Collection<Collection<Integer>> of8 = partitionNoSingletons(oneToNine, 8);
+        assertThat(of8, hasSize(2));
+        assertThat(of8, contains(newCollection(1, 2, 3, 4, 5, 6, 7), newCollection(8, 9)));
     }
 
     @Test
