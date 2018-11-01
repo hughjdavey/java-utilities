@@ -36,6 +36,7 @@ import static utilities.Collections.newCollection;
 import static utilities.Collections.notNullOrEmpty;
 import static utilities.Collections.partition;
 import static utilities.Collections.partitionNoSingletons;
+import static utilities.Collections.partitionOverlapping;
 import static utilities.Collections.reverse;
 import static utilities.Collections.slice;
 import static utilities.Collections.tail;
@@ -237,6 +238,28 @@ public class CollectionsTest {
         final Collection<Collection<Integer>> of8 = partitionNoSingletons(oneToNine, 8);
         assertThat(of8, hasSize(2));
         assertThat(of8, contains(newCollection(1, 2, 3, 4, 5, 6, 7), newCollection(8, 9)));
+    }
+
+    @Test
+    public void testPartitionOverlapping() {
+        final Collection<Collection<Integer>> of3 = partitionOverlapping(oneToNine, 3);
+        assertThat(of3, hasSize(4));
+        assertThat(of3, contains(newCollection(1, 2, 3), newCollection(3, 4, 5), newCollection(5, 6, 7), newCollection(7, 8, 9)));
+
+        final Collection<Collection<Integer>> of4 = partitionOverlapping(oneToNine, 4);
+        assertThat(of4, hasSize(3));
+        assertThat(of4, contains(newCollection(1, 2, 3, 4), newCollection(4, 5, 6, 7), newCollection(7, 8, 9)));
+
+        final Collection<Collection<Integer>> of8 = partitionOverlapping(oneToNine, 8);
+        assertThat(of8, hasSize(2));
+        assertThat(of8, contains(newCollection(1, 2, 3, 4, 5, 6, 7, 8), newCollection(8, 9)));
+
+        // do the other permutations of 1-9 in less detail
+        assertThat(partitionOverlapping(oneToNine, 2), contains(newCollection(1, 2), newCollection(2, 3), newCollection(3, 4), newCollection(4, 5), newCollection(5, 6), newCollection(6, 7), newCollection(7, 8), newCollection(8, 9)));
+        assertThat(partitionOverlapping(oneToNine, 5), contains(newCollection(1, 2, 3, 4, 5), newCollection(5, 6, 7, 8, 9)));
+        assertThat(partitionOverlapping(oneToNine, 6), contains(newCollection(1, 2, 3, 4, 5, 6), newCollection(6, 7, 8, 9)));
+        assertThat(partitionOverlapping(oneToNine, 7), contains(newCollection(1, 2, 3, 4, 5, 6, 7), newCollection(7, 8, 9)));
+        assertThat(partitionOverlapping(oneToNine, 9), contains(newCollection(1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }
 
     @Test

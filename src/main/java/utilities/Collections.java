@@ -199,6 +199,24 @@ public class Collections {
         return partition(ts, partitionSize);
     }
 
+    /**
+     * Partition a collection similarly to {@code partition}, but each partition contains the last element of the previous one
+     */
+    public static <T> Collection<Collection<T>> partitionOverlapping(final Collection<T> ts, final int partitionSize) {
+        validatePartitionSize(partitionSize, 2);
+
+        final int[] indexWindow = new int[]{ 0, partitionSize };
+        final List<Collection<T>> partitionedList = new ArrayList<>();
+
+        do {
+            partitionedList.add(slice(ts, indexWindow[0], indexWindow[1] > ts.size() ? ts.size() : indexWindow[1]));
+            indexWindow[0] += partitionSize - 1;
+            indexWindow[1] += partitionSize - 1;
+        }
+        while (indexWindow[1] < (ts.size() + partitionSize - 1));
+
+        return partitionedList;
+    }
 
     public static <T> Collection<T> reverse(final Collection<T> ts) {
         return reverseRange(0, ts.size())

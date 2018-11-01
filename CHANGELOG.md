@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 (01/11/2018)
+
+* Add partitionOverlapping Collections method
+
 ## 1.1.0 (23/09/2018)
 
 * Add repeat Consumer and null/empty Collections methods
