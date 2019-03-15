@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,6 +35,10 @@ public class Collections {
 
     public static <T> Collection<T> fill(final T t, final int times) {
         return IntStream.range(0, times).mapToObj(i -> t).collect(Collectors.toList());
+    }
+
+    public static <T> Collection<T> fill(final Supplier<T> supplier, final int times) {
+        return IntStream.range(0, times).mapToObj(i -> supplier.get()).collect(Collectors.toList());
     }
 
     /** VALIDATORS **/

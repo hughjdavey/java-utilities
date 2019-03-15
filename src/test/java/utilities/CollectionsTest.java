@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -78,6 +79,10 @@ public class CollectionsTest {
         assertThat(fill("foo", 0), is(newCollection()));
         assertThat(fill("foo", 2), is(newCollection("foo", "foo")));
         assertThat(fill("foo", 5), is(newCollection("foo", "foo", "foo", "foo", "foo")));
+
+        assertThat(fill(() -> "f" + "o" + "o", 5), is(newCollection("foo", "foo", "foo", "foo", "foo")));
+        final AtomicInteger counter = new AtomicInteger(1);
+        assertThat(fill(() -> "foo" + counter.getAndIncrement(), 5), is(newCollection("foo1", "foo2", "foo3", "foo4", "foo5")));
     }
 
     @Test

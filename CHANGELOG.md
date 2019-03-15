@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 (15/03/2019)
+
+* Add Collections#fill(Supplier) method
+
 ## 1.2.0 (01/11/2018)
 
 * Add partitionOverlapping Collections method
